@@ -12,27 +12,46 @@
 </head>
 <body>
 <div class="container my-5">
-    <form method="post" action="/create">
+    <form method="post" enctype="multipart/form-data" action="/create" >
         <div class="w-100 text-center">
             <img width="100" height="100" src="/logo" alt="Go Türkiye Logo">
         </div>
         <h1 class="text-center">Go Türkiye 🇹🇷</h1>
         <h3 class="text-center">Event Cover Generator</h3>
         <div class="form-group">
+            <label for="template">Template</label>
+            <select name="template" class="form-control">
+                <option value="1">Mavimsi</option>
+                <option value="2">Turuncumsu</option>
+            </select>
+        </div>
+        <div class="form-group">
             <label for="speakerTopic">Konu</label>
-            <input class="form-control" id="speakerTopic" name="speakerTopic" value="">
+            <input class="form-control"
+                   id="speakerTopic"
+                   name="topic"
+                   value="Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak">
+        </div>
+        <div class="form-group">
+            <label for="avatar">Konuşmacı Avatar</label>
+            <input name="avatar" type="file" class="form-control-file"
+                   id="avatar">
         </div>
         <div class="form-group">
             <label for="speakerName">İsim</label>
-            <input class="form-control" id="speakerName" name="speakerName" value="">
+            <input
+                    value="Abdulsamet İleri"
+                    class="form-control" id="speakerName" name="name">
         </div>
         <div class="form-group">
             <label for="speakerJob">Çalıştığı Yer</label>
-            <input class="form-control" id="speakerJob" name="speakerJob" value="">
+            <input class="form-control" id="speakerJob" name="job"
+                   value="Full Stack Developer at Modanisa">
         </div>
         <div class="form-group">
             <label for="speakerEventTime">Tarih & Saat</label>
-            <input class="form-control" id="speakerEventTime" name="speakerEventTime" value="">
+            <input class="form-control" id="speakerEventTime"
+                   name="eventTime" value="17 Haziran Perşembe 21:00">
         </div>
         <div class="w-100 text-center">
             <button type="submit" class="btn btn-success pl-5 pr-5">Kapak Resmi Oluştur</button>

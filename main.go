@@ -1,15 +1,16 @@
 package main
 
 import (
+	"bytes"
 	_ "embed"
 	"github.com/fogleman/gg"
 	"github.com/golang/freetype/truetype"
 	"github.com/labstack/echo"
 	"github.com/nfnt/resize"
 	"golang.org/x/image/font"
+	"image"
 	"image/png"
 	"net/http"
-	"strconv"
 )
 
 //go:embed static/logo.png
@@ -21,7 +22,58 @@ var index []byte
 //go:embed fonts/CuprumFFU.ttf
 var cuprum []byte
 
+//go:embed templates/1.png
+var template1 []byte
+
+//go:embed templates/2.png
+var template2 []byte
+
+var templateMap map[string][]byte
+
+type Props struct {
+	TopicHexColor           string
+	AvatarContainerCircleBg string
+	CircleY                 float64
+	CircleR                 float64
+	NameTextY               float64
+	JobTextY                float64
+	JobTextColor            string
+	EventDateBg             string
+	EventRectangleY         float64
+}
+
+var templateToProps map[string]Props
+
 func main() {
+	templateMap = make(map[string][]byte, 0)
+	templateMap["1"] = template1
+	templateMap["2"] = template2
+
+	templateToProps = make(map[string]Props, 0)
+
+	templateToProps["1"] = Props{
+		TopicHexColor:           "#2E2D29",
+		AvatarContainerCircleBg: "2D414A",
+		CircleY:                 590,
+		CircleR:                 100,
+		NameTextY:               570,
+		JobTextY:                590,
+		JobTextColor:            "#7F9EA3",
+		EventDateBg:             "#476C7C",
+		EventRectangleY:         740,
+	}
+	templateToProps["2"] = Props{
+		TopicHexColor:           "#291D07",
+		AvatarContainerCircleBg: "#8F6863",
+		CircleY:                 540,
+		CircleR:                 100,
+		NameTextY:               520,
+		JobTextY:                540,
+		JobTextColor:            "#47350F",
+		EventDateBg:             "#4F3A0B",
+		EventRectangleY:         720,
+	}
+
 	e := echo.New()
 	e.HideBanner = true
 
@@ -33,7 +85,6 @@ func main() {
 		_, err := c.Response().Write(logo)
 		return err
 	})
-	e.GET("/test", CreateCoverImage)
 	e.POST("/create", CreateCoverImage)
 
 	e.Logger.Fatal(e.Start(":1323"))
@@ -52,23 +103,18 @@ func loadFontWithSpecificSize(size float64) (font.Face, error) {
 }
 
 func CreateCoverImage(c echo.Context) error {
-	x, _ := strconv.ParseFloat(c.QueryParam("x"), 64)
-	y, _ := strconv.ParseFloat(c.QueryParam("y"), 64)
-	rw, _ := strconv.ParseFloat(c.QueryParam("rw"), 64)
-	rh, _ := strconv.ParseFloat(c.QueryParam("rh"), 64)
-	ah, _ := strconv.ParseInt(c.QueryParam("ah"), 10, 32)
-	aw, _ := strconv.ParseInt(c.QueryParam("aw"), 10, 32)
-	ax, _ := strconv.ParseFloat(c.QueryParam("ax"), 64)
-	ay, _ := strconv.ParseFloat(c.QueryParam("ay"), 64)
-	ar, _ := strconv.ParseFloat(c.QueryParam("ar"), 64)
+	templateId := c.FormValue("template")
 
-	fontSize, _ := strconv.ParseFloat(c.QueryParam("size"), 64)
+	topic := c.FormValue("topic")
+	avatar, errAvatar := c.FormFile("avatar")
+	if errAvatar != nil {
+		return c.JSON(http.StatusBadRequest, errAvatar)
+	}
+	name := c.FormValue("name")
+	job := c.FormValue("job")
+	eventTime := c.FormValue("eventTime")
 
-	_, _, _, _, _, _, _, _, _, _ = x, y, rw, rh, fontSize, ax, ay, ar, ah, aw
-	name := c.FormValue("tel")
-	_ = name
-
-	img, err := gg.LoadImage("templates/1.png")
+	img, err := png.Decode(bytes.NewReader(templateMap[templateId]))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
@@ -78,55 +124,59 @@ func CreateCoverImage(c echo.Context) error {
 
 	dc := gg.NewContext(imgWidth, imgHeight)
 	dc.DrawImage(img, 0, 0)
-	face, err := loadFontWithSpecificSize(70)
+
+	face, err := loadFontWithSpecificSize(65)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
 	}
 	dc.SetFontFace(face)
 
-	dc.SetHexColor("#2E2D29")
-	dc.DrawStringAnchored("Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
-		float64(imgWidth/2), 370, 0.5, 0.5)
+	dc.SetHexColor(templateToProps[templateId].TopicHexColor)
+	topicW, _ := dc.MeasureString(topic)
+	dc.DrawString(topic,
+		float64(imgWidth/2)-(topicW/2),
+		390)
 
-	avatar, err := gg.LoadImage("avatar.jpeg")
+	file, err := avatar.Open()
 	if err != nil {
-		return c.JSON(http.StatusInternalServerError, err.Error())
+		return c.JSON(http.StatusBadRequest, err.Error())
 	}
+	defer file.Close()
+
+	avatarImg, _, err := image.Decode(file)
 
 	// Konuşmacı Avatarını Koy
-	avatarResized := resize.Resize(200, 200, avatar, resize.Lanczos3)
-	dc.SetHexColor("#2D414A")
-	dc.DrawCircle(float64(imgWidth/2), 590, 100)
-	dc.Clip()
-	dc.DrawImageAnchored(avatarResized, imgWidth/2, 590, 0.5, 0.5)
-	dc.ResetClip()
+	avatarResized := resize.Resize(200, 200, avatarImg, resize.Lanczos3)
+	dc.SetHexColor(templateToProps[templateId].AvatarContainerCircleBg)
 	//
+	dc.DrawCircle(float64(imgWidth/2), templateToProps[templateId].CircleY, templateToProps[templateId].CircleR)
+	dc.Clip()
+	dc.DrawImageAnchored(avatarResized, imgWidth/2, int(templateToProps[templateId].CircleY), 0.5, 0.5)
+	dc.ResetClip()
 
 	// İsmi ve nerede çalıştığı
 	face, _ = loadFontWithSpecificSize(50)
 	dc.SetFontFace(face)
 	dc.SetHexColor("#00040B")
-	dc.DrawString("Abdulsamet İleri", float64(imgWidth/2)+120, 570)
+	dc.DrawString(name, float64(imgWidth/2)+120, templateToProps[templateId].NameTextY)
 	face, _ = loadFontWithSpecificSize(30)
 	dc.SetFontFace(face)
-	dc.SetHexColor("#7F9EA3")
-	dc.DrawStringWrapped("Full Stack Developer at Modanisa",
-		float64(imgWidth/2)+120, 590, 0, 0, 250, 1, gg.AlignLeft)
+	dc.SetHexColor(templateToProps[templateId].JobTextColor)
+	dc.DrawStringWrapped(job,
+		float64(imgWidth/2)+120, templateToProps[templateId].JobTextY, 0, 0, 250, 1, gg.AlignLeft)
 	//
 
 	// Event date ve time
-	face, _ = loadFontWithSpecificSize(50)
+	face, _ = loadFontWithSpecificSize(40)
 	dc.SetFontFace(face)
-	dc.SetHexColor("#476C7C")
-	date := "17 Haziran Perşembe 21:00"
-	wDate, hDate := dc.MeasureString(date)
+	dc.SetHexColor(templateToProps[templateId].EventDateBg)
+	wDate, hDate := dc.MeasureString(eventTime)
 	dateRectX := float64(imgWidth/2) - (wDate / 2)
-	dc.DrawRectangle(dateRectX, 740, wDate+100, hDate+20)
+	dc.DrawRectangle(dateRectX, templateToProps[templateId].EventRectangleY, wDate+30, hDate+10)
 	dc.Fill()
+
 	dc.SetHexColor("#FFFFFF")
-	dateStrX := dateRectX + (wDate+100-wDate)/2
-	dc.DrawStringAnchored(date, dateStrX, 740+hDate, 0, 0)
-	//
+	dc.DrawString(eventTime, dateRectX+(wDate+30-wDate)/2, templateToProps[templateId].EventRectangleY+hDate)
 
 	return png.Encode(c.Response().Writer, dc.Image())
 }
