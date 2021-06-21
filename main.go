@@ -44,14 +44,10 @@ type Props struct {
 
 var templateToProps map[string]Props
 
-func main() {
-	templateMap = make(map[string][]byte, 0)
-	templateMap["1"] = template1
-	templateMap["2"] = template2
+func initializeTemplateToProps() map[string]Props {
+	initMap := make(map[string]Props, 0)
 
-	templateToProps = make(map[string]Props, 0)
-
-	templateToProps["1"] = Props{
+	initMap["1"] = Props{
 		TopicHexColor:           "#2E2D29",
 		AvatarContainerCircleBg: "2D414A",
 		CircleY:                 590,
@@ -62,7 +58,7 @@ func main() {
 		EventDateBg:             "#476C7C",
 		EventRectangleY:         740,
 	}
-	templateToProps["2"] = Props{
+	initMap["2"] = Props{
 		TopicHexColor:           "#291D07",
 		AvatarContainerCircleBg: "#8F6863",
 		CircleY:                 540,
@@ -73,6 +69,20 @@ func main() {
 		EventDateBg:             "#4F3A0B",
 		EventRectangleY:         720,
 	}
+	return initMap
+}
+
+func initTemplateMap() map[string][]byte {
+	initMap := make(map[string][]byte, 0)
+	initMap["1"] = template1
+	initMap["2"] = template2
+
+	return initMap
+}
+
+func main() {
+	templateMap = initTemplateMap()
+	templateToProps = initializeTemplateToProps()
 
 	e := echo.New()
 	e.HideBanner = true
