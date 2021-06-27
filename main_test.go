@@ -100,7 +100,7 @@ func Test_CreateCoverImage(t *testing.T) {
 
 		require.Equal(t, "request Content-Type isn't multipart/form-data", mfc["ErrorString"])
 	})
-	t.Run("Abdulsamet Ileri's Event Template Generate Successfully", func(t *testing.T) {
+	t.Run("All event template samples are generated successfully?", func(t *testing.T) {
 		for _, r := range initTestData() {
 			body, contentType := fileUploadRequest(r.fileName)
 			res, req := createHttpReq(http.MethodPost, "/create", body)
