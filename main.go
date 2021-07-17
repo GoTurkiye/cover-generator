@@ -28,8 +28,6 @@ var template1 []byte
 //go:embed templates/2.png
 var template2 []byte
 
-var templateMap map[string][]byte
-
 type Props struct {
 	TopicHexColor           string
 	AvatarContainerCircleBg string
@@ -42,43 +40,8 @@ type Props struct {
 	EventRectangleY         float64
 }
 
+var templateMap map[string][]byte
 var templateToProps map[string]Props
-
-func initializeTemplateToProps() map[string]Props {
-	initMap := make(map[string]Props, 0)
-
-	initMap["1"] = Props{
-		TopicHexColor:           "#2E2D29",
-		AvatarContainerCircleBg: "2D414A",
-		CircleY:                 590,
-		CircleR:                 100,
-		NameTextY:               570,
-		JobTextY:                590,
-		JobTextColor:            "#7F9EA3",
-		EventDateBg:             "#476C7C",
-		EventRectangleY:         740,
-	}
-	initMap["2"] = Props{
-		TopicHexColor:           "#291D07",
-		AvatarContainerCircleBg: "#8F6863",
-		CircleY:                 540,
-		CircleR:                 100,
-		NameTextY:               520,
-		JobTextY:                540,
-		JobTextColor:            "#47350F",
-		EventDateBg:             "#4F3A0B",
-		EventRectangleY:         720,
-	}
-	return initMap
-}
-
-func initTemplateMap() map[string][]byte {
-	initMap := make(map[string][]byte, 0)
-	initMap["1"] = template1
-	initMap["2"] = template2
-
-	return initMap
-}
 
 func main() {
 	templateMap = initTemplateMap()
@@ -87,32 +50,24 @@ func main() {
 	e := echo.New()
 	e.HideBanner = true
 
-	e.GET("/", func(c echo.Context) error {
-		_, err := c.Response().Write(index)
-		return err
-	})
-	e.GET("/logo", func(c echo.Context) error {
-		_, err := c.Response().Write(logo)
-		return err
-	})
-	e.POST("/create", CreateCoverImage)
+	e.GET("/", renderHomePage)
+	e.GET("/logo", renderLogo)
+	e.POST("/create", createCoverImage)
 
 	e.Logger.Fatal(e.Start(":1323"))
 }
 
-func loadFontWithSpecificSize(size float64) (font.Face, error) {
-	f, err := truetype.Parse(cuprum)
-	if err != nil {
-		return nil, err
-	}
-	face := truetype.NewFace(f, &truetype.Options{
-		Size: size,
-	})
-
-	return face, nil
+func renderHomePage(c echo.Context) error {
+	_, err := c.Response().Write(index)
+	return err
 }
 
-func CreateCoverImage(c echo.Context) error {
+func renderLogo(c echo.Context) error {
+	_, err := c.Response().Write(logo)
+	return err
+}
+
+func createCoverImage(c echo.Context) error {
 	templateId := c.FormValue("template")
 
 	topic := c.FormValue("topic")
@@ -155,16 +110,15 @@ func CreateCoverImage(c echo.Context) error {
 
 	avatarImg, _, err := image.Decode(file)
 
-	// Konuşmacı Avatarını Koy
+	// Put Speaker Avatar
 	avatarResized := resize.Resize(200, 200, avatarImg, resize.Lanczos3)
 	dc.SetHexColor(templateToProps[templateId].AvatarContainerCircleBg)
-	//
 	dc.DrawCircle(float64(imgWidth/2), templateToProps[templateId].CircleY, templateToProps[templateId].CircleR)
 	dc.Clip()
 	dc.DrawImageAnchored(avatarResized, imgWidth/2, int(templateToProps[templateId].CircleY), 0.5, 0.5)
 	dc.ResetClip()
 
-	// İsmi ve nerede çalıştığı
+	// Put Speaker's Name and Company
 	face, _ = loadFontWithSpecificSize(50)
 	dc.SetFontFace(face)
 	dc.SetHexColor("#00040B")
@@ -172,9 +126,10 @@ func CreateCoverImage(c echo.Context) error {
 	face, _ = loadFontWithSpecificSize(30)
 	dc.SetFontFace(face)
 	dc.SetHexColor(templateToProps[templateId].JobTextColor)
+
+	const rectangleWidth = 340
 	dc.DrawStringWrapped(job,
-		float64(imgWidth/2)+120, templateToProps[templateId].JobTextY, 0, 0, 250, 1, gg.AlignLeft)
-	//
+		float64(imgWidth/2)+120, templateToProps[templateId].JobTextY, 0, 0, rectangleWidth, 1, gg.AlignLeft)
 
 	// Event date ve time
 	face, _ = loadFontWithSpecificSize(40)
@@ -189,4 +144,52 @@ func CreateCoverImage(c echo.Context) error {
 	dc.DrawString(eventTime, dateRectX+(wDate+30-wDate)/2, templateToProps[templateId].EventRectangleY+hDate)
 
 	return png.Encode(c.Response().Writer, dc.Image())
+}
+
+func initializeTemplateToProps() map[string]Props {
+	initMap := make(map[string]Props, 0)
+
+	initMap["1"] = Props{
+		TopicHexColor:           "#2E2D29",
+		AvatarContainerCircleBg: "2D414A",
+		CircleY:                 590,
+		CircleR:                 100,
+		NameTextY:               570,
+		JobTextY:                590,
+		JobTextColor:            "#7F9EA3",
+		EventDateBg:             "#476C7C",
+		EventRectangleY:         740,
+	}
+	initMap["2"] = Props{
+		TopicHexColor:           "#291D07",
+		AvatarContainerCircleBg: "#8F6863",
+		CircleY:                 540,
+		CircleR:                 100,
+		NameTextY:               520,
+		JobTextY:                540,
+		JobTextColor:            "#47350F",
+		EventDateBg:             "#4F3A0B",
+		EventRectangleY:         720,
+	}
+	return initMap
+}
+
+func initTemplateMap() map[string][]byte {
+	initMap := make(map[string][]byte, 0)
+	initMap["1"] = template1
+	initMap["2"] = template2
+
+	return initMap
+}
+
+func loadFontWithSpecificSize(size float64) (font.Face, error) {
+	f, err := truetype.Parse(cuprum)
+	if err != nil {
+		return nil, err
+	}
+	face := truetype.NewFace(f, &truetype.Options{
+		Size: size,
+	})
+
+	return face, nil
 }

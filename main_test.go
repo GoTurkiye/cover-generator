@@ -29,6 +29,24 @@ type request struct {
 func initTestData() []request {
 	requests := make([]request, 0)
 	requests = append(requests, request{
+		fileName:    "avatar4.png",
+		template:    "1",
+		topic:       "",
+		name:        "Erhan Yakut",
+		job:         "Senior Software Architect at Binalyze",
+		eventTime:   "30 Temmuz Cuma 21:00",
+		outputImage: "erkan-template1.png",
+	})
+	requests = append(requests, request{
+		fileName:    "avatar4.png",
+		template:    "2",
+		topic:       "",
+		name:        "Erhan Yakut",
+		job:         "Senior Software Architect at Binalyze",
+		eventTime:   "30 Temmuz Cuma 21:00",
+		outputImage: "erkan-template2.png",
+	})
+	requests = append(requests, request{
 		fileName:    "avatar3.png",
 		template:    "1",
 		topic:       "Go Compilerına Tilde (~) Operatorü Eklemek",
@@ -91,7 +109,7 @@ func Test_CreateCoverImage(t *testing.T) {
 		res, req := createHttpReq(http.MethodGet, "/api/v1/categories", nil)
 		e := echo.New()
 		echoTextContext := e.NewContext(req, res)
-		err := CreateCoverImage(echoTextContext)
+		err := createCoverImage(echoTextContext)
 		require.NoError(t, err)
 
 		var mfc map[string]interface{}
@@ -118,7 +136,7 @@ func Test_CreateCoverImage(t *testing.T) {
 			templateMap = initTemplateMap()
 			templateToProps = initializeTemplateToProps()
 
-			err := CreateCoverImage(echoTextContext)
+			err := createCoverImage(echoTextContext)
 			require.NoError(t, err)
 
 			outputPath := "/Users/abdulsametileri/Development/Go Projects/go/src/github.com/Abdulsametileri/go-turkiye-cover-generator/output/%s"
