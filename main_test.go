@@ -13,92 +13,102 @@ import (
 	"net/http/httptest"
 	"net/url"
 	"os"
+	"strconv"
 	"testing"
 )
 
 type request struct {
-	fileName    string
-	template    string
-	topic       string
-	name        string
-	job         string
-	eventTime   string
-	outputImage string
+	fileName       string
+	template       string
+	topic          string
+	name           string
+	job            string
+	eventTime      string
+	outputImage    string
+	putTwitterInfo bool
 }
 
 func initTestData() []request {
 	requests := make([]request, 0)
 	requests = append(requests, request{
-		fileName:    "avatar4.png",
-		template:    "1",
-		topic:       "",
-		name:        "Erhan Yakut",
-		job:         "Senior Software Architect at Binalyze",
-		eventTime:   "30 Temmuz Cuma 21:00",
-		outputImage: "erkan-template1.png",
+		fileName:       "avatar4.png",
+		template:       "1",
+		topic:          "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
+		name:           "Erhan Yakut",
+		job:            "Senior Software Architect at Binalyze",
+		eventTime:      "30 Temmuz Cuma 21:00",
+		outputImage:    "erkan-template1.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar4.png",
-		template:    "2",
-		topic:       "",
-		name:        "Erhan Yakut",
-		job:         "Senior Software Architect at Binalyze",
-		eventTime:   "30 Temmuz Cuma 21:00",
-		outputImage: "erkan-template2.png",
+		fileName:       "avatar4.png",
+		template:       "2",
+		topic:          "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
+		name:           "Erhan Yakut",
+		job:            "Senior Software Architect at Binalyze",
+		eventTime:      "30 Temmuz Cuma 21:00",
+		outputImage:    "erkan-template2.png",
+		putTwitterInfo: true,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar3.png",
-		template:    "1",
-		topic:       "Go Compilerına Tilde (~) Operatorü Eklemek",
-		name:        "Furkan Türkal",
-		job:         "Backend Developer at Trendyol",
-		eventTime:   "4 Haziran Cuma 21:00",
-		outputImage: "furkan-template1.png",
+		fileName:       "avatar3.png",
+		template:       "1",
+		topic:          "Go Compilerına Tilde (~) Operatorü Eklemek",
+		name:           "Furkan Türkal",
+		job:            "Backend Developer at Trendyol",
+		eventTime:      "4 Haziran Cuma 21:00",
+		outputImage:    "furkan-template1.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar3.png",
-		template:    "2",
-		topic:       "Go Compilerına Tilde (~) Operatorü Eklemek",
-		name:        "Furkan Türkal",
-		job:         "Backend Developer at Trendyol",
-		eventTime:   "4 Haziran Cuma 21:00",
-		outputImage: "furkan-template2.png",
+		fileName:       "avatar3.png",
+		template:       "2",
+		topic:          "Go Compilerına Tilde (~) Operatorü Eklemek",
+		name:           "Furkan Türkal",
+		job:            "Backend Developer at Trendyol",
+		eventTime:      "4 Haziran Cuma 21:00",
+		outputImage:    "furkan-template2.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar.jpeg",
-		template:    "1",
-		topic:       "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
-		name:        "Abdulsamet İleri",
-		job:         "Full Stack Developer at Modanisa",
-		eventTime:   "17 Haziran Perşembe 21:00",
-		outputImage: "abdulsamet-template1.png",
+		fileName:       "avatar.jpeg",
+		template:       "1",
+		topic:          "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
+		name:           "Abdulsamet İleri",
+		job:            "Full Stack Developer at Modanisa",
+		eventTime:      "17 Haziran Perşembe 21:00",
+		outputImage:    "abdulsamet-template1.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar.jpeg",
-		template:    "2",
-		topic:       "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
-		name:        "Abdulsamet İleri",
-		job:         "Full Stack Developer at Modanisa",
-		eventTime:   "17 Haziran Perşembe 21:00",
-		outputImage: "abdulsamet-template2.png",
+		fileName:       "avatar.jpeg",
+		template:       "2",
+		topic:          "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
+		name:           "Abdulsamet İleri",
+		job:            "Full Stack Developer at Modanisa",
+		eventTime:      "17 Haziran Perşembe 21:00",
+		outputImage:    "abdulsamet-template2.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar2.jpeg",
-		template:    "1",
-		topic:       "Go İle Network Programlama",
-		name:        "Oğuzhan Yılmaz",
-		job:         "CTO at Masomo Games",
-		eventTime:   "26 Haziran Cumartesi 21:00",
-		outputImage: "oguzhan-template1.png",
+		fileName:       "avatar2.jpeg",
+		template:       "1",
+		topic:          "Go İle Network Programlama",
+		name:           "Oğuzhan Yılmaz",
+		job:            "CTO at Masomo Games",
+		eventTime:      "26 Haziran Cumartesi 21:00",
+		outputImage:    "oguzhan-template1.png",
+		putTwitterInfo: false,
 	})
 	requests = append(requests, request{
-		fileName:    "avatar2.jpeg",
-		template:    "2",
-		topic:       "Go İle Network Programlama",
-		name:        "Oğuzhan Yılmaz",
-		job:         "CTO at Masomo Games",
-		eventTime:   "26 Haziran Cumartesi 21:00",
-		outputImage: "oguzhan-template2.png",
+		fileName:       "avatar2.jpeg",
+		template:       "2",
+		topic:          "Go İle Network Programlama",
+		name:           "Oğuzhan Yılmaz",
+		job:            "CTO at Masomo Games",
+		eventTime:      "26 Haziran Cumartesi 21:00",
+		outputImage:    "oguzhan-template2.png",
+		putTwitterInfo: false,
 	})
 
 	return requests
@@ -130,6 +140,7 @@ func Test_CreateCoverImage(t *testing.T) {
 			req.Form.Set("name", r.name)
 			req.Form.Set("job", r.job)
 			req.Form.Set("eventTime", r.eventTime)
+			req.Form.Set("putTwitterInfo", strconv.FormatBool(r.putTwitterInfo))
 			e := echo.New()
 			echoTextContext := e.NewContext(req, res)
 
@@ -139,9 +150,8 @@ func Test_CreateCoverImage(t *testing.T) {
 			err := createCoverImage(echoTextContext)
 			require.NoError(t, err)
 
-			outputPath := "/Users/abdulsametileri/Development/Go Projects/go/src/github.com/Abdulsametileri/go-turkiye-cover-generator/output/%s"
 			err = ioutil.WriteFile(
-				fmt.Sprintf(outputPath, r.outputImage),
+				fmt.Sprintf("output/%s", r.outputImage),
 				res.Body.Bytes(),
 				0777,
 			)

@@ -11,6 +11,7 @@ import (
 	"image"
 	"image/png"
 	"net/http"
+	"strconv"
 )
 
 //go:embed static/logo.png
@@ -27,6 +28,9 @@ var template1 []byte
 
 //go:embed templates/2.png
 var template2 []byte
+
+//go:embed images/twitter.png
+var twitterIcon []byte
 
 type Props struct {
 	TopicHexColor           string
@@ -79,6 +83,8 @@ func createCoverImage(c echo.Context) error {
 	job := c.FormValue("job")
 	eventTime := c.FormValue("eventTime")
 
+	putTwitterInfo, _ := strconv.ParseBool(c.FormValue("putTwitterInfo"))
+
 	img, err := png.Decode(bytes.NewReader(templateMap[templateId]))
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err.Error())
@@ -123,6 +129,7 @@ func createCoverImage(c echo.Context) error {
 	dc.SetFontFace(face)
 	dc.SetHexColor("#00040B")
 	dc.DrawString(name, float64(imgWidth/2)+120, templateToProps[templateId].NameTextY)
+
 	face, _ = loadFontWithSpecificSize(30)
 	dc.SetFontFace(face)
 	dc.SetHexColor(templateToProps[templateId].JobTextColor)
@@ -130,6 +137,16 @@ func createCoverImage(c echo.Context) error {
 	const rectangleWidth = 340
 	dc.DrawStringWrapped(job,
 		float64(imgWidth/2)+120, templateToProps[templateId].JobTextY, 0, 0, rectangleWidth, 1, gg.AlignLeft)
+
+	if putTwitterInfo {
+		twitterImage, err := png.Decode(bytes.NewReader(twitterIcon))
+		if err == nil {
+			dc.DrawImage(twitterImage, (imgWidth/2)+120, 610)
+			face, _ = loadFontWithSpecificSize(20)
+			dc.SetFontFace(face)
+			dc.DrawString("@yakuter", float64(imgWidth/2)+150, 630)
+		}
+	}
 
 	// Event date ve time
 	face, _ = loadFontWithSpecificSize(40)
