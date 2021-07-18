@@ -1,4 +1,4 @@
-module github.com/GoTurkiye/go-turkiye-cover-generator
+module github.com/GoTurkiye/cover-generator
 
 go 1.16
 
