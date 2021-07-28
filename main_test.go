@@ -18,97 +18,102 @@ import (
 )
 
 type request struct {
-	fileName       string
-	template       string
-	topic          string
-	name           string
-	job            string
-	eventTime      string
-	outputImage    string
-	putTwitterInfo bool
+	fileName    string
+	template    string
+	topic       string
+	name        string
+	job         string
+	eventTime   string
+	outputImage string
+	twitterName string
+	githubName  string
 }
 
 func initTestData() []request {
 	requests := make([]request, 0)
 	requests = append(requests, request{
-		fileName:       "avatar4.png",
-		template:       "1",
-		topic:          "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
-		name:           "Erhan Yakut",
-		job:            "Senior Software Architect at Binalyze",
-		eventTime:      "30 Temmuz Cuma 21:00",
-		outputImage:    "erkan-template1.png",
-		putTwitterInfo: false,
+		fileName:    "avatar5.png",
+		template:    "1",
+		topic:       "Go ile Protocol Buffer Kullanımı (Google Runtime)",
+		name:        "Mert Simsek",
+		job:         "Software Developer",
+		eventTime:   "12 Ağustos Perşembe Saat 21:00",
+		outputImage: "mert-simsek-template1.png",
+		twitterName: "mertingen",
+		githubName:  "mertingen",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar4.png",
-		template:       "2",
-		topic:          "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
-		name:           "Erhan Yakut",
-		job:            "Senior Software Architect at Binalyze",
-		eventTime:      "30 Temmuz Cuma 21:00",
-		outputImage:    "erkan-template2.png",
-		putTwitterInfo: true,
+		fileName:    "avatar4.png",
+		template:    "1",
+		topic:       "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
+		name:        "Erhan Yakut",
+		job:         "Senior Software Architect at Binalyze",
+		eventTime:   "30 Temmuz Cuma 21:00",
+		outputImage: "erkan-template1.png",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar3.png",
-		template:       "1",
-		topic:          "Go Compilerına Tilde (~) Operatorü Eklemek",
-		name:           "Furkan Türkal",
-		job:            "Backend Developer at Trendyol",
-		eventTime:      "4 Haziran Cuma 21:00",
-		outputImage:    "furkan-template1.png",
-		putTwitterInfo: false,
+		fileName:    "avatar4.png",
+		template:    "2",
+		topic:       "Go ile Http Client Paketi Geliştirme ve Test Süreçleri\n",
+		name:        "Erhan Yakut",
+		job:         "Senior Software Architect at Binalyze",
+		eventTime:   "30 Temmuz Cuma 21:00",
+		outputImage: "erkan-template2.png",
+		twitterName: "yakuter",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar3.png",
-		template:       "2",
-		topic:          "Go Compilerına Tilde (~) Operatorü Eklemek",
-		name:           "Furkan Türkal",
-		job:            "Backend Developer at Trendyol",
-		eventTime:      "4 Haziran Cuma 21:00",
-		outputImage:    "furkan-template2.png",
-		putTwitterInfo: false,
+		fileName:    "avatar3.png",
+		template:    "1",
+		topic:       "Go Compilerına Tilde (~) Operatorü Eklemek",
+		name:        "Furkan Türkal",
+		job:         "Backend Developer at Trendyol",
+		eventTime:   "4 Haziran Cuma 21:00",
+		outputImage: "furkan-template1.png",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar.jpeg",
-		template:       "1",
-		topic:          "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
-		name:           "Abdulsamet İleri",
-		job:            "Full Stack Developer at Modanisa",
-		eventTime:      "17 Haziran Perşembe 21:00",
-		outputImage:    "abdulsamet-template1.png",
-		putTwitterInfo: false,
+		fileName:    "avatar3.png",
+		template:    "2",
+		topic:       "Go Compilerına Tilde (~) Operatorü Eklemek",
+		name:        "Furkan Türkal",
+		job:         "Backend Developer at Trendyol",
+		eventTime:   "4 Haziran Cuma 21:00",
+		outputImage: "furkan-template2.png",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar.jpeg",
-		template:       "2",
-		topic:          "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
-		name:           "Abdulsamet İleri",
-		job:            "Full Stack Developer at Modanisa",
-		eventTime:      "17 Haziran Perşembe 21:00",
-		outputImage:    "abdulsamet-template2.png",
-		putTwitterInfo: false,
+		fileName:    "avatar.jpeg",
+		template:    "1",
+		topic:       "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
+		name:        "Abdulsamet İleri",
+		job:         "Full Stack Developer at Modanisa",
+		eventTime:   "17 Haziran Perşembe 21:00",
+		outputImage: "abdulsamet-template1.png",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar2.jpeg",
-		template:       "1",
-		topic:          "Go İle Network Programlama",
-		name:           "Oğuzhan Yılmaz",
-		job:            "CTO at Masomo Games",
-		eventTime:      "26 Haziran Cumartesi 21:00",
-		outputImage:    "oguzhan-template1.png",
-		putTwitterInfo: false,
+		fileName:    "avatar.jpeg",
+		template:    "2",
+		topic:       "Go+Vue.js ile Resim Hatırlatma Uygulaması Yapmak",
+		name:        "Abdulsamet İleri",
+		job:         "Full Stack Developer at Modanisa",
+		eventTime:   "17 Haziran Perşembe 21:00",
+		outputImage: "abdulsamet-template2.png",
 	})
 	requests = append(requests, request{
-		fileName:       "avatar2.jpeg",
-		template:       "2",
-		topic:          "Go İle Network Programlama",
-		name:           "Oğuzhan Yılmaz",
-		job:            "CTO at Masomo Games",
-		eventTime:      "26 Haziran Cumartesi 21:00",
-		outputImage:    "oguzhan-template2.png",
-		putTwitterInfo: false,
+		fileName:    "avatar2.jpeg",
+		template:    "1",
+		topic:       "Go İle Network Programlama",
+		name:        "Oğuzhan Yılmaz",
+		job:         "CTO at Masomo Games",
+		eventTime:   "26 Haziran Cumartesi 21:00",
+		outputImage: "oguzhan-template1.png",
+	})
+	requests = append(requests, request{
+		fileName:    "avatar2.jpeg",
+		template:    "2",
+		topic:       "Go İle Network Programlama",
+		name:        "Oğuzhan Yılmaz",
+		job:         "CTO at Masomo Games",
+		eventTime:   "26 Haziran Cumartesi 21:00",
+		outputImage: "oguzhan-template2.png",
 	})
 
 	return requests
@@ -140,7 +145,10 @@ func Test_CreateCoverImage(t *testing.T) {
 			req.Form.Set("name", r.name)
 			req.Form.Set("job", r.job)
 			req.Form.Set("eventTime", r.eventTime)
-			req.Form.Set("putTwitterInfo", strconv.FormatBool(r.putTwitterInfo))
+			req.Form.Set("putTwitterInfo", strconv.FormatBool(r.twitterName != ""))
+			req.Form.Set("twitterName", r.twitterName)
+			req.Form.Set("putGithubInfo", strconv.FormatBool(r.githubName != ""))
+			req.Form.Set("githubName", r.githubName)
 			e := echo.New()
 			echoTextContext := e.NewContext(req, res)
 

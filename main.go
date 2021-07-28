@@ -32,6 +32,9 @@ var template2 []byte
 //go:embed images/twitter.png
 var twitterIcon []byte
 
+//go:embed images/github.png
+var githubIcon []byte
+
 type Props struct {
 	TopicHexColor           string
 	AvatarContainerCircleBg string
@@ -84,6 +87,10 @@ func createCoverImage(c echo.Context) error {
 	eventTime := c.FormValue("eventTime")
 
 	putTwitterInfo, _ := strconv.ParseBool(c.FormValue("putTwitterInfo"))
+	twitterName := c.FormValue("twitterName")
+
+	putGithubInfo, _ := strconv.ParseBool(c.FormValue("putGithubInfo"))
+	githubName := c.FormValue("githubName")
 
 	img, err := png.Decode(bytes.NewReader(templateMap[templateId]))
 	if err != nil {
@@ -138,13 +145,33 @@ func createCoverImage(c echo.Context) error {
 	dc.DrawStringWrapped(job,
 		float64(imgWidth/2)+120, templateToProps[templateId].JobTextY, 0, 0, rectangleWidth, 1, gg.AlignLeft)
 
+	twitterIconY := templateToProps[templateId].JobTextY
+	jobTextWidth, jobTextHeight := dc.MeasureString(job)
+	if jobTextWidth > rectangleWidth {
+		twitterIconY += jobTextWidth - rectangleWidth
+	} else {
+		twitterIconY += jobTextHeight + 20
+	}
+
+	// Twitter and Github should be together because we set github icon position
+	// relative to twitter icon position!
+
 	if putTwitterInfo {
 		twitterImage, err := png.Decode(bytes.NewReader(twitterIcon))
 		if err == nil {
-			dc.DrawImage(twitterImage, (imgWidth/2)+120, 610)
+			dc.DrawImage(twitterImage, (imgWidth/2)+120, int(twitterIconY))
 			face, _ = loadFontWithSpecificSize(20)
 			dc.SetFontFace(face)
-			dc.DrawString("@yakuter", float64(imgWidth/2)+150, 630)
+			dc.DrawString("@"+twitterName, float64(imgWidth/2)+150, twitterIconY+20)
+		}
+	}
+	if putGithubInfo {
+		githubImage, err := png.Decode(bytes.NewReader(githubIcon))
+		if err == nil {
+			dc.DrawImage(githubImage, (imgWidth/2)+120, int(twitterIconY+30))
+			face, _ = loadFontWithSpecificSize(20)
+			dc.SetFontFace(face)
+			dc.DrawString("/"+githubName, float64(imgWidth/2)+150, twitterIconY+50)
 		}
 	}
 
