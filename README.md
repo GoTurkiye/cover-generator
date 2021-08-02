@@ -6,7 +6,7 @@ etkinliğin zamanı.
 Her etkinlikte değişen konuşmacılara göre yeniden yeniden etkinlik cover resmini elle oluşturmak
 yerine neden bir png üretecek bir go servisi ile bunu yapmayalım? 
 
-İster testlerden isterse uygulamayı çalıştırıp doğrudan anasayfaya giderek
+İster testlerden ister uygulamayı çalıştırıp doğrudan anasayfaya giderek
 verdiğiniz bilgilere dayalı png resmi generate ettirebilirsiniz.
 
 # Uygulamayı çalıştırmak
